@@ -63,7 +63,6 @@ export default function LearnCoursePage() {
       return;
     }
 
-    // Check student role
     const { data: profile, error: profileError } = await supabase
       .from("profiles")
       .select("role")
@@ -75,7 +74,6 @@ export default function LearnCoursePage() {
       return;
     }
 
-    // Check enrollment
     const { data: enrollment, error: enrollmentError } =
       await supabase
         .from("enrollments")
@@ -99,7 +97,6 @@ export default function LearnCoursePage() {
       return;
     }
 
-    // Get course
     const { data: courseData, error: courseError } =
       await supabase
         .from("courses")
@@ -116,7 +113,7 @@ export default function LearnCoursePage() {
 
     setCourse(courseData);
 
-    // Get lessons INCLUDING video_url
+    // IMPORTANT: video_url is included here
     const { data: lessonData, error: lessonError } =
       await supabase
         .from("lessons")
@@ -135,6 +132,8 @@ export default function LearnCoursePage() {
 
     const currentLessons: Lesson[] = lessonData || [];
 
+    console.log("LESSONS:", currentLessons);
+
     setLessons(currentLessons);
 
     const lessonIds = currentLessons.map(
@@ -147,7 +146,6 @@ export default function LearnCoursePage() {
       return;
     }
 
-    // Get completed lessons
     const {
       data: progressData,
       error: progressError,
@@ -163,9 +161,7 @@ export default function LearnCoursePage() {
       setCompletedLessons([]);
     } else {
       setCompletedLessons(
-        progressData?.map(
-          (item) => item.lesson_id
-        ) || []
+        progressData?.map((item) => item.lesson_id) || []
       );
     }
 
@@ -215,17 +211,13 @@ export default function LearnCoursePage() {
     });
   }
 
-  // Loading
   if (loading) {
     return (
       <main className="min-h-screen bg-slate-50">
-        <div className="mx-auto max-w-6xl px-6 py-12 lg:px-8">
-          <div className="rounded-2xl border border-slate-200 bg-white p-12 text-center shadow-sm">
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-blue-50">
-              <div className="h-6 w-6 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
-            </div>
-
-            <p className="mt-4 text-sm font-medium text-slate-500">
+        <div className="mx-auto max-w-6xl px-6 py-12">
+          <div className="rounded-2xl bg-white p-12 text-center shadow-sm">
+            <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
+            <p className="mt-4 text-sm text-slate-500">
               Loading your course...
             </p>
           </div>
@@ -234,28 +226,24 @@ export default function LearnCoursePage() {
     );
   }
 
-  // Error
   if (errorMessage) {
     return (
       <main className="min-h-screen bg-slate-50">
-        <div className="mx-auto max-w-6xl px-6 py-12 lg:px-8">
-          <div className="rounded-2xl border border-red-200 bg-white p-12 text-center shadow-sm">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-red-50 text-2xl">
-              !
-            </div>
+        <div className="mx-auto max-w-6xl px-6 py-12">
+          <div className="rounded-2xl bg-white p-12 text-center shadow-sm">
+            <div className="text-3xl text-red-500">!</div>
 
-            <h2 className="mt-5 text-xl font-bold text-slate-900">
+            <h2 className="mt-4 text-xl font-bold text-slate-900">
               Unable to open course
             </h2>
 
-            <p className="mx-auto mt-2 max-w-lg text-sm leading-6 text-slate-500">
+            <p className="mt-2 text-sm text-slate-500">
               {errorMessage}
             </p>
 
             <button
-              type="button"
               onClick={() => window.history.back()}
-              className="mt-6 rounded-lg bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-600"
+              className="mt-6 rounded-lg bg-slate-900 px-5 py-3 text-sm font-semibold text-white hover:bg-blue-600"
             >
               Go Back
             </button>
@@ -265,26 +253,20 @@ export default function LearnCoursePage() {
     );
   }
 
-  // Course not found
   if (!course) {
     return (
       <main className="min-h-screen bg-slate-50">
-        <div className="mx-auto max-w-6xl px-6 py-12 lg:px-8">
-          <div className="rounded-2xl border border-slate-200 bg-white p-12 text-center shadow-sm">
-            <h2 className="text-xl font-bold text-slate-900">
+        <div className="mx-auto max-w-6xl px-6 py-12">
+          <div className="rounded-2xl bg-white p-12 text-center">
+            <h2 className="text-xl font-bold">
               Course not found
             </h2>
-
-            <p className="mt-2 text-sm text-slate-500">
-              The course you are looking for does not exist.
-            </p>
           </div>
         </div>
       </main>
     );
   }
 
-  // Progress calculation
   const completedCount = lessons.filter((lesson) =>
     completedLessons.includes(lesson.id)
   ).length;
@@ -305,13 +287,13 @@ export default function LearnCoursePage() {
 
   return (
     <main className="min-h-screen bg-slate-50">
-      <div className="mx-auto max-w-6xl px-6 py-10 lg:px-8">
+      <div className="mx-auto max-w-6xl px-6 py-10">
 
         {/* COURSE HEADER */}
         <div className="overflow-hidden rounded-2xl bg-slate-900 shadow-sm">
 
           {course.thumbnail_url && (
-            <div className="h-56 w-full overflow-hidden sm:h-64">
+            <div className="h-56 overflow-hidden">
               <img
                 src={course.thumbnail_url}
                 alt={course.title}
@@ -320,40 +302,27 @@ export default function LearnCoursePage() {
             </div>
           )}
 
-          <div className="px-8 py-10 sm:px-10">
+          <div className="px-8 py-10">
+            <span className="rounded-full bg-blue-500/10 px-3 py-1 text-xs font-semibold text-blue-400">
+              MY LEARNING
+            </span>
 
-            <div className="flex items-center gap-2">
-
-              <span className="rounded-full bg-blue-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-blue-400">
-                My Learning
-              </span>
-
-              {isCourseCompleted && (
-                <span className="rounded-full bg-green-500/10 px-3 py-1 text-xs font-semibold text-green-400">
-                  Completed
-                </span>
-              )}
-
-            </div>
-
-            <h1 className="mt-4 text-3xl font-bold tracking-tight text-white sm:text-4xl">
+            <h1 className="mt-4 text-3xl font-bold text-white">
               {course.title}
             </h1>
 
-            <p className="mt-4 max-w-3xl text-base leading-7 text-slate-300">
+            <p className="mt-4 max-w-3xl text-slate-300">
               {course.description ||
                 "Complete the lessons below and continue building your skills."}
             </p>
-
           </div>
 
           {/* PROGRESS */}
-          <div className="border-t border-slate-700 bg-slate-800 px-8 py-6 sm:px-10">
+          <div className="border-t border-slate-700 bg-slate-800 px-8 py-6">
 
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-
+            <div className="flex justify-between">
               <div>
-                <p className="text-sm font-medium text-slate-300">
+                <p className="text-sm text-slate-300">
                   Course Progress
                 </p>
 
@@ -362,109 +331,66 @@ export default function LearnCoursePage() {
                 </p>
               </div>
 
-              <div className="text-left sm:text-right">
-
-                <p className="text-sm font-medium text-slate-300">
+              <div className="text-right">
+                <p className="text-sm text-slate-300">
                   {completedCount} of {lessons.length} lessons
                 </p>
-
-                <p className="mt-1 text-xs text-slate-500">
-                  {isCourseCompleted
-                    ? "All lessons completed"
-                    : "Keep going to complete the course"}
-                </p>
-
               </div>
-
             </div>
 
-            <div className="mt-4 h-2.5 w-full overflow-hidden rounded-full bg-slate-700">
-
+            <div className="mt-4 h-2.5 overflow-hidden rounded-full bg-slate-700">
               <div
-                className="h-full rounded-full bg-blue-500 transition-all duration-500"
+                className="h-full rounded-full bg-blue-500 transition-all"
                 style={{
                   width: `${progress}%`,
                 }}
               />
-
             </div>
 
           </div>
         </div>
 
-        {/* LESSON SECTION */}
+        {/* LESSONS */}
         <div className="mt-10">
 
-          <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+          <h2 className="text-2xl font-bold text-slate-900">
+            Course Lessons
+          </h2>
 
-            <div>
+          <p className="mt-1 text-sm text-slate-500">
+            Watch the lesson video and complete each lesson.
+          </p>
 
-              <h2 className="text-2xl font-bold text-slate-900">
-                Course Lessons
-              </h2>
-
-              <p className="mt-1 text-sm text-slate-500">
-                Complete each lesson to track your learning progress.
-              </p>
-
-            </div>
-
-            <div className="text-sm font-medium text-slate-500">
-              {completedCount}/{lessons.length} completed
-            </div>
-
-          </div>
-
-          {/* NO LESSONS */}
           {lessons.length === 0 ? (
-
-            <div className="rounded-2xl border border-slate-200 bg-white p-10 text-center shadow-sm">
-
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-blue-50 text-xl">
-                📖
-              </div>
-
-              <h3 className="mt-4 text-lg font-bold text-slate-900">
-                No lessons available
-              </h3>
-
-              <p className="mt-2 text-sm text-slate-500">
-                Your instructor has not added any lessons yet.
+            <div className="mt-6 rounded-2xl bg-white p-10 text-center">
+              <p className="text-slate-500">
+                No lessons available.
               </p>
-
             </div>
-
           ) : (
-
-            /* LESSON LIST */
-            <div className="space-y-4">
+            <div className="mt-6 space-y-5">
 
               {lessons.map((lesson) => {
 
                 const isCompleted =
-                  completedLessons.includes(
-                    lesson.id
-                  );
+                  completedLessons.includes(lesson.id);
 
                 return (
-
                   <div
                     key={lesson.id}
-                    className={`rounded-2xl border bg-white p-6 shadow-sm transition ${
+                    className={`rounded-2xl border bg-white p-6 shadow-sm ${
                       isCompleted
-                        ? "border-green-200 bg-green-50/30"
-                        : "border-slate-200 hover:border-blue-200 hover:shadow-md"
+                        ? "border-green-200"
+                        : "border-slate-200"
                     }`}
                   >
 
-                    <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="flex flex-col gap-5 sm:flex-row sm:justify-between">
 
-                      {/* LESSON CONTENT */}
-                      <div className="flex min-w-0 gap-4">
+                      <div className="flex gap-4">
 
-                        {/* LESSON NUMBER */}
                         <div
-                          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-sm font-bold ${
+                          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl font-bold ${
                             isCompleted
                               ? "bg-green-100 text-green-700"
                               : "bg-blue-50 text-blue-600"
@@ -475,9 +401,9 @@ export default function LearnCoursePage() {
                             : lesson.lesson_order}
                         </div>
 
-                        <div className="min-w-0 flex-1">
+                        <div className="min-w-0">
 
-                          <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                          <p className="text-xs font-semibold uppercase text-slate-400">
                             Lesson {lesson.lesson_order}
                           </p>
 
@@ -485,59 +411,53 @@ export default function LearnCoursePage() {
                             {lesson.title}
                           </h3>
 
-                          {/* DESCRIPTION */}
                           {lesson.description && (
                             <p className="mt-2 text-sm leading-6 text-slate-500">
                               {lesson.description}
                             </p>
                           )}
 
-                          {/* VIDEO BUTTON */}
-                          {lesson.video_url &&
-                            lesson.video_url.trim() !== "" && (
-                              <div className="mt-4">
+                          {/* VIDEO */}
+                          <div className="mt-5">
 
-                                <a
-                                  href={lesson.video_url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
-                                >
-                                  <span>
-                                    🎥
-                                  </span>
-
-                                  <span>
-                                    Watch Lesson Video
-                                  </span>
-                                </a>
-
-                              </div>
+                            {lesson.video_url &&
+                            lesson.video_url.trim() !== "" ? (
+                              <a
+                                href={lesson.video_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-blue-700"
+                              >
+                                🎥 Watch Lesson Video
+                              </a>
+                            ) : (
+                              <p className="text-sm font-medium text-red-500">
+                                Video URL not available for this lesson.
+                              </p>
                             )}
 
-                          {/* LESSON CONTENT */}
-                          {lesson.content && (
-                            <div className="mt-5 rounded-xl border border-slate-100 bg-slate-50 p-5">
+                          </div>
 
+                          {/* CONTENT */}
+                          {lesson.content && (
+                            <div className="mt-5 rounded-xl bg-slate-50 p-5">
                               <p className="whitespace-pre-line text-sm leading-7 text-slate-700">
                                 {lesson.content}
                               </p>
-
                             </div>
                           )}
 
                         </div>
-
                       </div>
 
-                      {/* MARK COMPLETE */}
+                      {/* COMPLETE */}
                       <button
                         type="button"
                         onClick={() =>
                           markComplete(lesson.id)
                         }
                         disabled={isCompleted}
-                        className={`shrink-0 rounded-lg px-5 py-3 text-sm font-semibold transition ${
+                        className={`shrink-0 rounded-lg px-5 py-3 text-sm font-semibold ${
                           isCompleted
                             ? "cursor-not-allowed bg-green-100 text-green-700"
                             : "bg-slate-900 text-white hover:bg-blue-600"
@@ -551,54 +471,25 @@ export default function LearnCoursePage() {
                     </div>
 
                   </div>
-
                 );
               })}
 
             </div>
-
           )}
 
-          {/* COURSE COMPLETED */}
           {isCourseCompleted && (
+            <div className="mt-8 rounded-2xl border border-green-200 bg-green-50 p-6">
+              <h3 className="text-lg font-bold text-green-800">
+                Course completed! 🎉
+              </h3>
 
-            <div className="mt-8 overflow-hidden rounded-2xl border border-green-200 bg-green-50">
-
-              <div className="p-6">
-
-                <div className="flex items-start gap-4">
-
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-green-100 text-lg font-bold text-green-700">
-                    ✓
-                  </div>
-
-                  <div>
-
-                    <h3 className="text-lg font-bold text-green-800">
-                      Course completed!
-                    </h3>
-
-                    <p className="mt-1 text-sm leading-6 text-green-700">
-                      Great job! You have successfully completed
-                      all the lessons in this course.
-                    </p>
-
-                    <p className="mt-3 text-sm font-semibold text-green-800">
-                      You can now review the lessons whenever you want.
-                    </p>
-
-                  </div>
-
-                </div>
-
-              </div>
-
+              <p className="mt-2 text-sm text-green-700">
+                You have successfully completed all lessons.
+              </p>
             </div>
-
           )}
 
         </div>
-
       </div>
     </main>
   );
