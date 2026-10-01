@@ -16,6 +16,7 @@ type Lesson = {
   id: string;
   title: string;
   description: string | null;
+  video_url: string | null;
   content: string | null;
   lesson_order: number;
 };
@@ -33,7 +34,6 @@ export default function LearnCoursePage() {
   const [course, setCourse] = useState<Course | null>(null);
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [completedLessons, setCompletedLessons] = useState<string[]>([]);
-
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -430,6 +430,16 @@ export default function LearnCoursePage() {
                               {lesson.description}
                             </p>
                           )}
+                          {lesson.video_url && (
+  <a
+    href={lesson.video_url}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="mt-4 inline-flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700"
+  >
+    🎥 Watch Lesson Video
+  </a>
+)}
                           {lesson.content && (
                             <div className="mt-5 rounded-xl border border-slate-100 bg-slate-50 p-5">
                               <p className="whitespace-pre-line text-sm leading-7 text-slate-700">
