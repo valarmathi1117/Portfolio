@@ -214,10 +214,15 @@ export default function LessonsPage() {
                       )}
 
                       {lesson.video_url && (
-                        <span className="mt-3 inline-flex rounded-full bg-green-50 px-3 py-1 text-xs font-semibold text-green-700">
-                          Video Available
-                        </span>
-                      )}
+  <a
+    href={lesson.video_url}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="mt-3 inline-flex rounded-full bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+  >
+    🎥 Watch Video
+  </a>
+)}
                     </div>
                   </div>
                   <div className="flex shrink-0 gap-3">
