@@ -112,7 +112,7 @@ export default function LearnCoursePage() {
     const { data: lessonData, error: lessonError } = await supabase
       .from("lessons")
       .select(
-        "id, title, description, content, lesson_order"
+        "id, title, description,video_url, content, lesson_order"
       )
       .eq("course_id", courseId)
       .order("lesson_order", { ascending: true });
