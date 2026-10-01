@@ -63,6 +63,7 @@ export default function LearnCoursePage() {
       return;
     }
 
+    // Check student role
     const { data: profile, error: profileError } = await supabase
       .from("profiles")
       .select("role")
@@ -74,15 +75,17 @@ export default function LearnCoursePage() {
       return;
     }
 
-    const { data: enrollment, error: enrollmentError } = await supabase
-      .from("enrollments")
-      .select("course_id")
-      .eq("student_id", user.id)
-      .eq("course_id", courseId)
-      .maybeSingle();
+    // Check enrollment
+    const { data: enrollment, error: enrollmentError } =
+      await supabase
+        .from("enrollments")
+        .select("course_id")
+        .eq("student_id", user.id)
+        .eq("course_id", courseId)
+        .maybeSingle();
 
     if (enrollmentError) {
-      console.error("Enrollment error:", enrollmentError);
+      console.error(enrollmentError);
       setErrorMessage("Unable to verify your course enrollment.");
       setLoading(false);
       return;
@@ -96,14 +99,16 @@ export default function LearnCoursePage() {
       return;
     }
 
-    const { data: courseData, error: courseError } = await supabase
-      .from("courses")
-      .select("id, title, description, thumbnail_url")
-      .eq("id", courseId)
-      .single();
+    // Get course
+    const { data: courseData, error: courseError } =
+      await supabase
+        .from("courses")
+        .select("id, title, description, thumbnail_url")
+        .eq("id", courseId)
+        .single();
 
     if (courseError) {
-      console.error("Course error:", courseError);
+      console.error(courseError);
       setErrorMessage("Unable to load this course.");
       setLoading(false);
       return;
@@ -112,16 +117,17 @@ export default function LearnCoursePage() {
     setCourse(courseData);
 
     // Get lessons INCLUDING video_url
-    const { data: lessonData, error: lessonError } = await supabase
-      .from("lessons")
-      .select(
-        "id, title, description, video_url, content, lesson_order"
-      )
-      .eq("course_id", courseId)
-      .order("lesson_order", { ascending: true });
+    const { data: lessonData, error: lessonError } =
+      await supabase
+        .from("lessons")
+        .select(
+          "id, title, description, video_url, content, lesson_order"
+        )
+        .eq("course_id", courseId)
+        .order("lesson_order", { ascending: true });
 
     if (lessonError) {
-      console.error("Lesson error:", lessonError);
+      console.error(lessonError);
       setErrorMessage("Unable to load course lessons.");
       setLoading(false);
       return;
@@ -129,21 +135,11 @@ export default function LearnCoursePage() {
 
     const currentLessons: Lesson[] = lessonData || [];
 
-    // DEBUG: Check lesson data in browser console
-    console.log("LESSON DATA:", currentLessons);
-
-    currentLessons.forEach((lesson) => {
-      console.log(
-        `Lesson ${lesson.lesson_order}:`,
-        lesson.title,
-        "Video URL:",
-        lesson.video_url
-      );
-    });
-
     setLessons(currentLessons);
 
-    const lessonIds = currentLessons.map((lesson) => lesson.id);
+    const lessonIds = currentLessons.map(
+      (lesson) => lesson.id
+    );
 
     if (lessonIds.length === 0) {
       setCompletedLessons([]);
@@ -151,6 +147,7 @@ export default function LearnCoursePage() {
       return;
     }
 
+    // Get completed lessons
     const {
       data: progressData,
       error: progressError,
@@ -162,11 +159,13 @@ export default function LearnCoursePage() {
       .in("lesson_id", lessonIds);
 
     if (progressError) {
-      console.error("Progress error:", progressError);
+      console.error(progressError);
       setCompletedLessons([]);
     } else {
       setCompletedLessons(
-        progressData?.map((item) => item.lesson_id) || []
+        progressData?.map(
+          (item) => item.lesson_id
+        ) || []
       );
     }
 
@@ -202,7 +201,7 @@ export default function LearnCoursePage() {
       );
 
     if (error) {
-      console.error("Mark complete error:", error);
+      console.error(error);
       alert("Unable to update lesson progress.");
       return;
     }
@@ -216,6 +215,7 @@ export default function LearnCoursePage() {
     });
   }
 
+  // Loading
   if (loading) {
     return (
       <main className="min-h-screen bg-slate-50">
@@ -234,6 +234,7 @@ export default function LearnCoursePage() {
     );
   }
 
+  // Error
   if (errorMessage) {
     return (
       <main className="min-h-screen bg-slate-50">
@@ -264,6 +265,7 @@ export default function LearnCoursePage() {
     );
   }
 
+  // Course not found
   if (!course) {
     return (
       <main className="min-h-screen bg-slate-50">
@@ -282,6 +284,7 @@ export default function LearnCoursePage() {
     );
   }
 
+  // Progress calculation
   const completedCount = lessons.filter((lesson) =>
     completedLessons.includes(lesson.id)
   ).length;
@@ -290,12 +293,15 @@ export default function LearnCoursePage() {
     lessons.length > 0
       ? Math.min(
           100,
-          Math.round((completedCount / lessons.length) * 100)
+          Math.round(
+            (completedCount / lessons.length) * 100
+          )
         )
       : 0;
 
   const isCourseCompleted =
-    lessons.length > 0 && completedCount === lessons.length;
+    lessons.length > 0 &&
+    completedCount === lessons.length;
 
   return (
     <main className="min-h-screen bg-slate-50">
@@ -384,15 +390,15 @@ export default function LearnCoursePage() {
             </div>
 
           </div>
-
         </div>
 
-        {/* LESSONS */}
+        {/* LESSON SECTION */}
         <div className="mt-10">
 
           <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
 
             <div>
+
               <h2 className="text-2xl font-bold text-slate-900">
                 Course Lessons
               </h2>
@@ -400,6 +406,7 @@ export default function LearnCoursePage() {
               <p className="mt-1 text-sm text-slate-500">
                 Complete each lesson to track your learning progress.
               </p>
+
             </div>
 
             <div className="text-sm font-medium text-slate-500">
@@ -408,6 +415,7 @@ export default function LearnCoursePage() {
 
           </div>
 
+          {/* NO LESSONS */}
           {lessons.length === 0 ? (
 
             <div className="rounded-2xl border border-slate-200 bg-white p-10 text-center shadow-sm">
@@ -428,13 +436,15 @@ export default function LearnCoursePage() {
 
           ) : (
 
+            /* LESSON LIST */
             <div className="space-y-4">
 
               {lessons.map((lesson) => {
 
-                const isCompleted = completedLessons.includes(
-                  lesson.id
-                );
+                const isCompleted =
+                  completedLessons.includes(
+                    lesson.id
+                  );
 
                 return (
 
@@ -449,6 +459,7 @@ export default function LearnCoursePage() {
 
                     <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
 
+                      {/* LESSON CONTENT */}
                       <div className="flex min-w-0 gap-4">
 
                         {/* LESSON NUMBER */}
@@ -482,26 +493,29 @@ export default function LearnCoursePage() {
                           )}
 
                           {/* VIDEO BUTTON */}
-                          {lesson.video_url ? (
-                            <div className="mt-4">
+                          {lesson.video_url &&
+                            lesson.video_url.trim() !== "" && (
+                              <div className="mt-4">
 
-                              <a
-                                href={lesson.video_url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700"
-                              >
-                                🎥 Watch Lesson Video
-                              </a>
+                                <a
+                                  href={lesson.video_url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
+                                >
+                                  <span>
+                                    🎥
+                                  </span>
 
-                            </div>
-                          ) : (
-                            <p className="mt-4 text-sm text-slate-400">
-                              No video available for this lesson.
-                            </p>
-                          )}
+                                  <span>
+                                    Watch Lesson Video
+                                  </span>
+                                </a>
 
-                          {/* CONTENT */}
+                              </div>
+                            )}
+
+                          {/* LESSON CONTENT */}
                           {lesson.content && (
                             <div className="mt-5 rounded-xl border border-slate-100 bg-slate-50 p-5">
 
@@ -516,10 +530,12 @@ export default function LearnCoursePage() {
 
                       </div>
 
-                      {/* COMPLETE BUTTON */}
+                      {/* MARK COMPLETE */}
                       <button
                         type="button"
-                        onClick={() => markComplete(lesson.id)}
+                        onClick={() =>
+                          markComplete(lesson.id)
+                        }
                         disabled={isCompleted}
                         className={`shrink-0 rounded-lg px-5 py-3 text-sm font-semibold transition ${
                           isCompleted
@@ -545,6 +561,7 @@ export default function LearnCoursePage() {
 
           {/* COURSE COMPLETED */}
           {isCourseCompleted && (
+
             <div className="mt-8 overflow-hidden rounded-2xl border border-green-200 bg-green-50">
 
               <div className="p-6">
@@ -577,6 +594,7 @@ export default function LearnCoursePage() {
               </div>
 
             </div>
+
           )}
 
         </div>
