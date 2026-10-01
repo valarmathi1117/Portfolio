@@ -430,16 +430,20 @@ export default function LearnCoursePage() {
                               {lesson.description}
                             </p>
                           )}
-                          {lesson.video_url && (
-  <a
-    href={lesson.video_url}
-    target="_blank"
-    rel="noopener noreferrer"
-    className="mt-4 inline-flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700"
-  >
-    🎥 Watch Lesson Video
-  </a>
-)}
+
+                          <p className="mt-2 text-sm text-red-500">
+                            URL: {lesson.video_url || "NO URL RECEIVED"}
+                          </p>
+                        <div className="mt-4">
+                         <a
+                            href={lesson.video_url || "#"}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700"
+                          >
+                              🎥 Watch Lesson Video
+                          </a>
+                        </div>
                           {lesson.content && (
                             <div className="mt-5 rounded-xl border border-slate-100 bg-slate-50 p-5">
                               <p className="whitespace-pre-line text-sm leading-7 text-slate-700">
