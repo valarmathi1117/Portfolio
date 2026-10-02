@@ -91,7 +91,7 @@ export default function LessonsPage() {
 
       setCourseTitle(course.title);
 
-      // IMPORTANT: video_url is included
+      
       const { data, error } = await supabase
         .from("lessons")
         .select(
